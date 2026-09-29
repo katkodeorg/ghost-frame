@@ -5,14 +5,13 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-/** Social apps' in-app browsers can't add to the Home Screen; the user must open Safari first. */
+/** In-app browsers (Instagram etc.) can't add to the Home Screen, the page has to be opened in Safari. */
 const IN_APP = /FBAN|FBAV|Instagram|TikTok|musical_ly|Snapchat|Line\/|Twitter|Pinterest|LinkedInApp/i;
 
 /**
- * "Install" button on the setup screen.
- * - Chromium (Android, desktop): triggers the native install prompt.
- * - iOS: there is no install API, so it opens step-by-step instructions.
- * Hidden when already running from the Home Screen or where installing isn't possible.
+ * Install button on the setup screen. Chromium browsers get the native install
+ * prompt. iOS has no install API, so it shows instructions instead. Hidden when
+ * already installed or when the browser can't install.
  */
 export function initInstall(): void {
   const btn = $<HTMLButtonElement>('install');

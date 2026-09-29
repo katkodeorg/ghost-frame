@@ -3,11 +3,11 @@ import { Camera, CameraError } from './camera';
 import { Overlay, attachGestures } from './overlay';
 import { drawEdges } from './edges';
 import { grabFrame, renderComparison, canvasToBlob, canvasToBlobSync } from './capture';
-import { saveFile, type SaveResult } from './share';
+import { saveFile, download, type SaveResult } from './share';
 import { $, timestamp, toast, prefersReducedMotion, sleepFrame, isIOS, isAndroid, isStandalone } from './util';
 import { initInstall } from './install';
 
-// ───────────── Elements ─────────────
+// Elements
 const setupEl = $('setup');
 const fileInput = $<HTMLInputElement>('file');
 const picker = $('picker');
@@ -52,7 +52,7 @@ const retakeBtn = $<HTMLButtonElement>('retake');
 const savePhotoBtn = $<HTMLButtonElement>('save-photo');
 const saveCompareBtn = $<HTMLButtonElement>('save-compare');
 
-// ───────────── State ─────────────
+// State
 const camera = new Camera(video);
 const overlay = new Overlay(overlayEl);
 
@@ -74,7 +74,7 @@ let lastAutoRestart = 0;
 
 const HINT_KEY = 'ghostframe.hintSeen';
 
-// ───────────── Setup screen ─────────────
+// Setup screen
 fileInput.addEventListener('change', () => {
   const file = fileInput.files?.[0];
   if (file) void loadReference(file);
@@ -110,8 +110,8 @@ async function loadReference(file: File): Promise<void> {
     URL.revokeObjectURL(url);
     const heic = /heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
     setupError.textContent = heic
-      ? 'This browser can’t open HEIC images. Pick the photo from your Photos library (iPhone converts it automatically), or convert it to JPEG first.'
-      : 'That file couldn’t be opened as an image. Try a JPEG, PNG or WebP.';
+      ? "This browser can't open HEIC files. Try picking the photo from your Photos library, or convert it to JPEG."
+      : "Couldn't open that file. Try a JPEG, PNG or WebP.";
     setupError.hidden = false;
     return;
   }
@@ -131,7 +131,7 @@ async function loadReference(file: File): Promise<void> {
 
 openCameraBtn.addEventListener('click', () => void openViewer());
 
-// ───────────── Viewer lifecycle ─────────────
+// Viewer lifecycle
 async function openViewer(): Promise<void> {
   if (!refUrl || !refImg) return;
 
@@ -196,7 +196,7 @@ camera.onEnded = () => {
     lastAutoRestart = now;
     void startCamera();
   } else {
-    showMessage('Camera stopped', [p('The camera was interrupted, possibly by another app.')], 'Resume camera');
+    showMessage('Camera stopped', [p('The camera stopped. Another app might have taken it.')], 'Resume camera');
   }
 };
 
@@ -208,7 +208,7 @@ function resumeIfNeeded(): void {
 document.addEventListener('visibilitychange', resumeIfNeeded);
 window.addEventListener('pageshow', resumeIfNeeded);
 
-// ───────────── Errors ─────────────
+// Errors
 function p(text: string): HTMLParagraphElement {
   const el = document.createElement('p');
   el.textContent = text;
@@ -239,32 +239,32 @@ function showCameraError(err: unknown): void {
     case 'denied': {
       const steps = isIOS
         ? isStandalone()
-          ? ['Open the Settings app → Apps → Safari → Camera.', 'Choose “Ask” or “Allow”.', 'Return here and tap Try again.']
-          : ['Tap “aA” (or the page menu) in Safari’s address bar → Website Settings.', 'Set Camera to “Allow”.', 'If it’s missing: Settings app → Apps → Safari → Camera → Ask.', 'Tap Try again.']
+          ? ['Open Settings > Apps > Safari > Camera.', 'Set it to Ask or Allow.', 'Come back and tap Try again.']
+          : ['Tap the aA button in the address bar, then Website Settings.', 'Set Camera to Allow.', "If that's not there, go to Settings > Apps > Safari > Camera.", 'Tap Try again.']
         : isAndroid
-          ? ['Tap the icon to the left of the address bar → Permissions (or Site settings).', 'Set Camera to “Allow”.', 'Tap Try again (or reload the page).']
-          : ['Click the camera or site-settings icon in the address bar.', 'Allow camera access for this site.', 'Click Try again (you may need to reload).'];
-      showMessage('Camera access is blocked', [p('Ghostframe needs your camera to show the live view. Nothing is recorded or uploaded.'), ol(steps)]);
+          ? ['Tap the icon left of the address bar, then Permissions.', 'Set Camera to Allow.', 'Tap Try again, or reload the page.']
+          : ['Click the camera icon in the address bar.', 'Allow camera access for this site.', 'Click Try again. You might need to reload.'];
+      showMessage('Camera access is blocked', [p('Ghostframe needs camera access to work.'), ol(steps)]);
       break;
     }
     case 'notfound':
-      showMessage('No camera found', [p('This device doesn’t seem to have a camera, or it’s disabled. Connect a camera, or open Ghostframe on your phone.')]);
+      showMessage('No camera found', [p("Couldn't find a camera on this device.")]);
       break;
     case 'busy':
-      showMessage('Camera unavailable', [p('The camera is being used by another app or tab. Close it and try again.')]);
+      showMessage('Camera unavailable', [p('Another app or tab might be using the camera. Close it and try again.')]);
       break;
     case 'insecure':
-      showMessage('Secure connection required', [p('Browsers only allow camera access over HTTPS. Open this page using its https:// address.')], null);
+      showMessage('Secure connection required', [p('The camera only works over HTTPS. Open the https:// version of this page.')], null);
       break;
     case 'unsupported':
-      showMessage('Camera not supported', [p('This browser can’t access the camera. Use Safari on iPhone, Chrome on Android, or a recent desktop browser.')], null);
+      showMessage('Camera not supported', [p("This browser doesn't support the camera. Try Safari on iPhone or Chrome on Android.")], null);
       break;
     default:
-      showMessage('Couldn’t start the camera', [p((err as Error)?.message || 'Something went wrong.')]);
+      showMessage("Couldn't start the camera", [p((err as Error)?.message || 'Something went wrong.')]);
   }
 }
 
-// ───────────── Layout ─────────────
+// Layout
 /** Letterboxes the stage to the exact aspect ratio of the source (no cropping). */
 function layoutStage(): void {
   const srcW = captured ? still.width : video.videoWidth;
@@ -282,7 +282,7 @@ new ResizeObserver(layoutStage).observe(stageWrap);
 video.addEventListener('loadedmetadata', layoutStage);
 video.addEventListener('resize', layoutStage); // fires when the device rotates
 
-// ───────────── Gestures & hint ─────────────
+// Gestures & hint
 attachGestures(stageWrap, overlay, {
   toStage(x, y) {
     const r = stage.getBoundingClientRect();
@@ -333,7 +333,7 @@ function dismissHint(): void {
   }
 }
 
-// ───────────── Overlay controls ─────────────
+// Overlay controls
 function setOpacity(pct: number): void {
   opacityInput.value = String(pct);
   opacityVal.textContent = `${pct}%`;
@@ -405,7 +405,7 @@ peekBtn.addEventListener('keyup', (e) => {
 });
 peekBtn.addEventListener('blur', () => peek(false));
 
-// ───────────── Camera controls ─────────────
+// Camera controls
 async function refreshLenses(): Promise<void> {
   const lenses = await camera.lenses().catch(() => []);
   lensSelect.replaceChildren(
@@ -445,7 +445,7 @@ zoomInput.addEventListener('input', () => {
   zoomFrame = requestAnimationFrame(() => void camera.setZoom(value).catch(() => {}));
 });
 
-// ───────────── Capture & review ─────────────
+// Capture & review
 function setCaptured(on: boolean): void {
   captured = on;
   video.hidden = on;
@@ -458,11 +458,11 @@ function setCaptured(on: boolean): void {
 
 function capture(): void {
   if (captured || !camera.isLive) {
-    if (!captured) toast('Camera isn’t ready yet');
+    if (!captured) toast("Camera isn't ready yet");
     return;
   }
   if (!grabFrame(video, still, camera.isFront)) {
-    toast('Camera isn’t ready yet');
+    toast("Camera isn't ready yet");
     return;
   }
   const hadFocus = document.activeElement === shutterBtn;
@@ -486,6 +486,26 @@ function capture(): void {
     if (stamp === captureStamp) photoFile = file;
     return file;
   });
+  void autoSave(stamp);
+}
+
+// Save every shot right away. iPhone can only save to Photos through the share
+// sheet, so open that. Everywhere else just download the file.
+async function autoSave(stamp: string): Promise<void> {
+  let file: File;
+  try {
+    file = await photoPromise!;
+  } catch {
+    toast("Couldn't save the photo");
+    return;
+  }
+  if (stamp !== captureStamp || !captured) return;
+  if (isIOS) {
+    reportSave(await saveFile(file), savePhoto);
+  } else {
+    download(file);
+    reportSave('downloaded', savePhoto);
+  }
 }
 
 function retake(): void {
@@ -517,7 +537,7 @@ async function savePhoto(): Promise<void> {
     const file = await photoPromise;
     reportSave(await saveFile(file), savePhoto);
   } catch {
-    toast('Couldn’t save the photo');
+    toast("Couldn't save the photo");
   } finally {
     savePhotoBtn.removeAttribute('aria-busy');
   }
@@ -538,7 +558,7 @@ async function saveComparison(): Promise<void> {
     canvas.width = canvas.height = 0; // release memory promptly (iOS)
     file = new File([blob], `ghostframe-compare-${captureStamp}.jpg`, { type: 'image/jpeg' });
   } catch {
-    toast('Couldn’t create the comparison');
+    toast("Couldn't make the comparison");
     return;
   }
   const trySave = async (): Promise<void> => reportSave(await saveFile(file), () => void trySave());
@@ -566,7 +586,7 @@ document.addEventListener('keyup', (e) => {
   if (e.key === 'h' || e.key === 'H') peek(false);
 });
 
-// ───────────── PWA ─────────────
+// PWA
 initInstall();
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

@@ -30,7 +30,7 @@ html, body {
   overscroll-behavior: none;
 }
 
-/* No double-tap-to-zoom delay on controls. */
+/* Avoid the double-tap zoom delay on controls. */
 button, a, input, select, label { touch-action: manipulation; }
 
 [hidden] { display: none !important; }
@@ -60,7 +60,7 @@ svg {
 
 .screen { min-height: 100%; }
 
-/* ───────────── Setup ───────────── */
+/* Setup */
 
 .setup {
   max-width: 480px;
@@ -145,7 +145,7 @@ svg {
 .btn-secondary { background: var(--surface); }
 .btn-primary:active:not(:disabled), .btn-secondary:active { transform: scale(0.97); }
 
-/* ───────────── Viewer ───────────── */
+/* Viewer */
 
 .viewer {
   position: fixed;
@@ -402,7 +402,7 @@ input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--a
   font-weight: 600; font-size: 14px;
 }
 
-/* ───────────── Install sheet ───────────── */
+/* Install sheet */
 
 .sheet {
   width: min(100% - 24px, 440px);
@@ -482,7 +482,7 @@ input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--a
   .segmented button { min-width: 52px; padding: 0 10px; }
   .sliders { padding: 0 8px; }
   .slider-row { gap: 8px; }
-  /* Give the sliders the width; the icons identify them and labels stay for screen readers. */
+  /* Hide slider labels to give the sliders more room. Screen readers still get them. */
   .slider-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .bottom { flex: 1; min-height: 96px; padding: 8px; }
   /* Lens picker gets its own full-width row above the shutter. */

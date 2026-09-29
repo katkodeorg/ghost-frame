@@ -3,7 +3,7 @@ import { drawWithTransform, type Transform } from './overlay';
 /** Longest side of each panel in the comparison image. */
 const PANEL_MAX = 2000;
 
-/** Grabs the current video frame at native resolution. The overlay is never drawn. */
+/** Copies the current video frame at full resolution, without the overlay. */
 export function grabFrame(video: HTMLVideoElement, into: HTMLCanvasElement, mirror: boolean): boolean {
   const w = video.videoWidth;
   const h = video.videoHeight;
@@ -30,8 +30,8 @@ export interface CompareInput {
 }
 
 /**
- * Reference (with the user's exact alignment, black outside it) next to the
- * photo: stacked for landscape shots, side by side for portrait.
+ * Reference (aligned the way the user left it, black around it) next to the
+ * photo. Stacked for landscape shots, side by side for portrait.
  */
 export function renderComparison({ photo, reference, aspect, transform, mirrored }: CompareInput): HTMLCanvasElement {
   const s = Math.min(1, PANEL_MAX / Math.max(photo.width, photo.height));
@@ -67,8 +67,8 @@ export function canvasToBlob(canvas: HTMLCanvasElement, quality = 0.95): Promise
 }
 
 /**
- * Synchronous JPEG encode. Used for the comparison so that navigator.share()
- * is still called inside the tap's user activation (Safari is strict here).
+ * Synchronous JPEG encode. Used for the comparison so navigator.share() runs
+ * while Safari still counts it as part of the tap.
  */
 export function canvasToBlobSync(canvas: HTMLCanvasElement, quality = 0.92): Blob {
   const url = canvas.toDataURL('image/jpeg', quality);

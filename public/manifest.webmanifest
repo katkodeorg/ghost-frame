@@ -1,7 +1,7 @@
 {
   "name": "Ghostframe",
   "short_name": "Ghostframe",
-  "description": "Recreate any photo: line up your shot against a ghost overlay of the reference.",
+  "description": "Line up your camera with a photo you want to recreate.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

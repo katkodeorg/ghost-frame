@@ -1,8 +1,8 @@
 /**
- * Overlay transform, normalised to the stage width so it survives rotation,
- * resizing and lens changes:
- *   x, y — offset of the overlay centre from the stage centre, in stage widths
- *   w    — overlay width, in stage widths (height follows the image aspect)
+ * Overlay position and size, in units of the stage width, so it holds up
+ * across rotation, resizing and lens changes.
+ * x, y: offset of the overlay centre from the stage centre
+ * w: overlay width (height follows the image aspect)
  */
 export interface Transform {
   x: number;

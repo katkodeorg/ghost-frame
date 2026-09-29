@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
     <meta name="color-scheme" content="dark" />
-    <meta name="description" content="Recreate any photo: line up your shot against a ghost overlay of the reference. Everything stays on your device." />
+    <meta name="description" content="Line up your camera with a photo you want to recreate." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -14,11 +14,11 @@
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <title>Ghostframe</title>
-    <script type="module" crossorigin src="./assets/index-DCnn17cG.js"></script>
+    <script type="module" crossorigin src="./assets/index-WeYm-q60.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-DUmreQIs.css">
   </head>
   <body>
-    <!-- ───────────── Setup ───────────── -->
+    <!-- Setup -->
     <main id="setup" class="screen setup">
       <header class="brand">
         <img src="./favicon.svg" alt="" width="40" height="40" />
@@ -28,7 +28,7 @@
           <span>Install</span>
         </button>
       </header>
-      <p class="tagline">Pick a photo you want to recreate. It will float over your camera so you can line up the shot.</p>
+      <p class="tagline">Pick a photo you want to recreate. It shows up over your camera so you can match the shot.</p>
 
       <label class="picker" id="picker">
         <input id="file" type="file" accept="image/*,.heic,.heif" class="visually-hidden" />
@@ -36,7 +36,7 @@
         <span class="picker-empty" id="picker-empty">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16l4.5-4.5 3 3L16 10l4 4M4 5h16v14H4z" /><circle cx="8.5" cy="8.5" r="1.5" /></svg>
           <strong>Choose reference image</strong>
-          <small>Anime scene, influencer shot, old family photo…</small>
+          <small>JPEG, PNG, HEIC or WebP</small>
         </span>
         <span class="picker-change" id="picker-change" hidden>Tap to change</span>
       </label>
@@ -48,10 +48,10 @@
         Open camera
       </button>
 
-      <p class="privacy">Your images never leave this device. No uploads, no accounts, no tracking.</p>
+      <p class="privacy">Your photos stay on your device.</p>
     </main>
 
-    <!-- ───────────── Viewfinder ───────────── -->
+    <!-- Viewfinder -->
     <section id="viewer" class="screen viewer" hidden aria-label="Viewfinder">
       <div
         id="stage-wrap"
@@ -144,7 +144,7 @@
       </div>
     </section>
 
-    <!-- ───────────── Add to Home Screen (iOS instructions) ───────────── -->
+    <!-- Add to Home Screen (iOS instructions) -->
     <dialog id="install-sheet" class="sheet" aria-labelledby="install-title">
       <div class="sheet-head">
         <h2 id="install-title">Add to Home Screen</h2>
@@ -153,12 +153,12 @@
         </button>
       </div>
       <p id="install-inapp" class="sheet-note" hidden>
-        You're in an in‑app browser. First open this page in <strong>Safari</strong> (tap <strong>•••</strong> or the compass icon → <strong>Open in Safari</strong>), then follow these steps.
+        Open this page in <strong>Safari</strong> first. In most apps that's under the <strong>•••</strong> menu, then <strong>Open in Safari</strong>.
       </p>
       <ol class="sheet-steps">
         <li>
           <span class="step-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M6 11H5v10h14V11h-1" /></svg></span>
-          <span>Tap the <strong>Share</strong> button in Safari's toolbar. On newer iOS it may be inside the <strong>•••</strong> menu.</span>
+          <span>Tap the <strong>Share</strong> button. On newer iOS versions it's in the <strong>•••</strong> menu.</span>
         </li>
         <li>
           <span class="step-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M12 8v8M8 12h8" /></svg></span>
@@ -166,7 +166,7 @@
         </li>
         <li>
           <span class="step-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg></span>
-          <span>Tap <strong>Add</strong>. Ghostframe opens full screen from your Home Screen and works offline.</span>
+          <span>Tap <strong>Add</strong>.</span>
         </li>
       </ol>
       <button type="button" class="btn-primary sheet-done" id="install-done">Got it</button>

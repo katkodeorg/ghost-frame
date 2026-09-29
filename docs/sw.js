@@ -1,7 +1,6 @@
-// Ghostframe service worker — generated at build time from scripts/sw-template.js.
-// Caches the app shell for offline use. User images never pass through here:
-// they are read from local files and never fetched over the network.
-const VERSION = '9e0c52510e60';
+// Service worker. The build fills in VERSION and PRECACHE from this template.
+// Caches the app shell so the app opens offline.
+const VERSION = '9be7586c0e36';
 const CACHE = `ghostframe-${VERSION}`;
 const PRECACHE = [
   "./",
@@ -13,7 +12,7 @@ const PRECACHE = [
   "icons/icon-512.png",
   "icons/maskable-512.png",
   "assets/index-DUmreQIs.css",
-  "assets/index-DCnn17cG.js"
+  "assets/index-WeYm-q60.js"
 ];
 
 self.addEventListener('install', (event) => {
@@ -38,7 +37,7 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
 
   if (req.mode === 'navigate') {
-    // Network first so deploys show up promptly; fall back to the cached shell offline.
+    // Network first so new deploys show up, cached shell when offline.
     event.respondWith(
       fetch(req)
         .then((res) => {

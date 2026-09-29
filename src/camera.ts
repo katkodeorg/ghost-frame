@@ -91,7 +91,7 @@ export class Camera {
     this.video.classList.toggle('mirrored', this.isFront);
     await waitForMetadata(this.video);
     await this.video.play().catch(() => {
-      /* autoplay with muted+playsinline normally succeeds; ignore spurious aborts */
+      /* muted + playsinline autoplay works; ignore occasional aborts */
     });
   }
 
@@ -101,7 +101,7 @@ export class Camera {
     this.video.srcObject = null;
   }
 
-  /** Video inputs, rear cameras first, with human-friendly labels. Call after permission is granted. */
+  /** Video inputs, rear cameras first, with cleaned up labels. Labels are only available after permission is granted. */
   async lenses(): Promise<Lens[]> {
     const devices = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'videoinput');
     const rank = (label: string) => (/back|rear|environment/i.test(label) ? 0 : /front|user|facetime/i.test(label) ? 2 : 1);
@@ -138,7 +138,7 @@ export class Camera {
   }
 }
 
-/** "Back Ultra Wide Camera" → "Ultra Wide", "camera2 1, facing back" → "Back 2", etc. */
+/** e.g. "Back Ultra Wide Camera" becomes "Ultra Wide", "camera2 1, facing back" becomes "Back 2". */
 export function cleanLabel(label: string, index: number): string {
   if (!label) return `Camera ${index + 1}`;
   const l = label.replace(/\s*\([0-9a-f]{4}:[0-9a-f]{4}\)\s*$/i, '').trim();

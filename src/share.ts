@@ -23,7 +23,7 @@ export async function saveFile(file: File): Promise<SaveResult> {
   return 'downloaded';
 }
 
-function download(file: File): void {
+export function download(file: File): void {
   const url = URL.createObjectURL(file);
   const a = document.createElement('a');
   a.href = url;

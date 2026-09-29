@@ -4,9 +4,8 @@ export const PROCESS_MAX = 1200;
 const LINE_RGB: [number, number, number] = [255, 230, 0];
 
 /**
- * Renders a bright yellow outline of `img` into `out`:
- * grayscale → 3×3 Gaussian blur → Sobel magnitude → keep pixels above the
- * ~90th percentile of gradient magnitude.
+ * Draws a yellow outline of `img` into `out`. Grayscale, 3x3 blur, Sobel,
+ * then keep pixels above roughly the 90th percentile of gradient magnitude.
  */
 export function drawEdges(img: CanvasImageSource & { naturalWidth: number; naturalHeight: number }, out: HTMLCanvasElement): void {
   const scale = Math.min(1, PROCESS_MAX / Math.max(img.naturalWidth, img.naturalHeight));
@@ -77,7 +76,7 @@ export function drawEdges(img: CanvasImageSource & { naturalWidth: number; natur
     acc += hist[bin];
     if (acc >= target) break;
   }
-  // A small floor stops sensor noise in flat images from turning into lines.
+  // Minimum threshold so noise in flat images doesn't show up as lines.
   const threshold = max > 0 ? Math.max(bin / toBin, 8) : Infinity;
 
   const outData = ctx.createImageData(w, h);
