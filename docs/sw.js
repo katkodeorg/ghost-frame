@@ -1,7 +1,7 @@
 // Ghostframe service worker — generated at build time from scripts/sw-template.js.
 // Caches the app shell for offline use. User images never pass through here:
 // they are read from local files and never fetched over the network.
-const VERSION = 'a2699aa24d48';
+const VERSION = '9e0c52510e60';
 const CACHE = `ghostframe-${VERSION}`;
 const PRECACHE = [
   "./",
@@ -12,8 +12,8 @@ const PRECACHE = [
   "icons/icon-192.png",
   "icons/icon-512.png",
   "icons/maskable-512.png",
-  "assets/index-Cc9Up1og.css",
-  "assets/index-CzeLjzAB.js"
+  "assets/index-DUmreQIs.css",
+  "assets/index-DCnn17cG.js"
 ];
 
 self.addEventListener('install', (event) => {

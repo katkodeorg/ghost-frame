@@ -21,6 +21,10 @@
       <header class="brand">
         <img src="./favicon.svg" alt="" width="40" height="40" />
         <h1>Ghostframe</h1>
+        <button id="install" type="button" class="install-btn" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5" /><path d="M12 7v7M9 11l3 3 3-3" /></svg>
+          <span>Install</span>
+        </button>
       </header>
       <p class="tagline">Pick a photo you want to recreate. It will float over your camera so you can line up the shot.</p>
 
@@ -80,10 +84,6 @@
           <button id="back" type="button" class="icon-btn" aria-label="Back to image selection">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
           </button>
-          <label class="lens" id="lens-wrap" hidden>
-            <span class="visually-hidden">Camera lens</span>
-            <select id="lens"></select>
-          </label>
           <span class="spacer"></span>
           <div class="segmented" role="radiogroup" aria-label="Overlay style">
             <button type="button" role="radio" aria-checked="true" id="mode-photo">Photo</button>
@@ -115,7 +115,14 @@
 
         <div class="bottom">
           <div id="live-controls" class="live-controls">
+            <div class="live-left">
+              <label class="lens" id="lens-wrap" hidden>
+                <span class="visually-hidden">Camera lens</span>
+                <select id="lens"></select>
+              </label>
+            </div>
             <button id="shutter" type="button" class="shutter" aria-label="Take photo" aria-keyshortcuts="Space"></button>
+            <div class="live-right"></div>
           </div>
           <div id="review-controls" class="review-controls" hidden>
             <button id="retake" type="button" class="action">
@@ -134,6 +141,34 @@
         </div>
       </div>
     </section>
+
+    <!-- ───────────── Add to Home Screen (iOS instructions) ───────────── -->
+    <dialog id="install-sheet" class="sheet" aria-labelledby="install-title">
+      <div class="sheet-head">
+        <h2 id="install-title">Add to Home Screen</h2>
+        <button type="button" class="icon-btn small" id="install-close" aria-label="Close">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </div>
+      <p id="install-inapp" class="sheet-note" hidden>
+        You're in an in‑app browser. First open this page in <strong>Safari</strong> (tap <strong>•••</strong> or the compass icon → <strong>Open in Safari</strong>), then follow these steps.
+      </p>
+      <ol class="sheet-steps">
+        <li>
+          <span class="step-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M6 11H5v10h14V11h-1" /></svg></span>
+          <span>Tap the <strong>Share</strong> button in Safari's toolbar. On newer iOS it may be inside the <strong>•••</strong> menu.</span>
+        </li>
+        <li>
+          <span class="step-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M12 8v8M8 12h8" /></svg></span>
+          <span>Scroll down and choose <strong>Add to Home Screen</strong>.</span>
+        </li>
+        <li>
+          <span class="step-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg></span>
+          <span>Tap <strong>Add</strong>. Ghostframe opens full screen from your Home Screen and works offline.</span>
+        </li>
+      </ol>
+      <button type="button" class="btn-primary sheet-done" id="install-done">Got it</button>
+    </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 

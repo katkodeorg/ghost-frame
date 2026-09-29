@@ -25,8 +25,13 @@ html, body {
   font: 16px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   overscroll-behavior: none;
 }
+
+/* No double-tap-to-zoom delay on controls. */
+button, a, input, select, label { touch-action: manipulation; }
 
 [hidden] { display: none !important; }
 
@@ -67,14 +72,36 @@ svg {
   min-height: 100dvh;
 }
 
-.brand { display: flex; align-items: center; gap: 12px; }
-.brand h1 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand > img { flex: none; width: clamp(32px, 10vw, 40px); height: auto; }
+.brand h1 {
+  margin: 0;
+  min-width: 0;
+  font-size: clamp(22px, 7vw, 28px);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.install-btn {
+  flex: none;
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 40px;
+  padding: 0 14px 0 10px;
+  border: 0; border-radius: 999px;
+  background: var(--surface);
+  font-size: 15px; font-weight: 600;
+  transition: background var(--ease);
+}
+.install-btn:hover { background: var(--surface-hover); }
+.install-btn svg { width: 20px; height: 20px; color: var(--accent); }
 .tagline { margin: 0; color: var(--muted); }
 
 .picker {
   position: relative;
   flex: 1 1 auto;
-  min-height: 260px;
+  min-height: min(260px, 45dvh);
   max-height: 60dvh;
   display: flex;
   align-items: center;
@@ -234,14 +261,19 @@ svg {
 }
 .icon-btn:hover { background: var(--surface-hover); }
 .icon-btn[aria-pressed='true'] { background: var(--accent); color: var(--accent-fg); }
-.icon-btn.small { width: 38px; height: 38px; }
+.icon-btn.small { width: 40px; height: 40px; }
 .icon-btn.small svg { width: 20px; height: 20px; }
 .icon-btn.held { background: var(--accent); color: var(--accent-fg); }
 
+.lens { display: block; min-width: 0; max-width: 100%; }
 .lens select {
   height: 44px;
-  max-width: 9.5em;
-  padding: 0 30px 0 14px;
+  width: 100%;
+  max-width: 10em;
+  padding: 0 28px 0 12px;
+  font-size: 16px; /* 16px stops iOS from zooming the page on focus */
+  white-space: nowrap;
+  overflow: hidden;
   border: 0; border-radius: 999px;
   background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center / 14px;
   appearance: none;
@@ -257,7 +289,7 @@ svg {
   background: var(--surface);
 }
 .segmented button {
-  min-width: 58px; height: 38px;
+  min-width: 56px; height: 40px;
   padding: 0 12px;
   border: 0; border-radius: 999px;
   background: transparent;
@@ -270,8 +302,9 @@ svg {
 .sliders { padding: 6px 16px 0; display: flex; flex-direction: column; gap: 4px; }
 .slider-row { display: flex; align-items: center; gap: 12px; min-height: 42px; }
 .slider-label { font-size: 14px; color: var(--muted); width: 3.9em; flex: none; }
+.slider-row .icon-btn.small, .icon-slot { flex: none; }
 .slider-row output { width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; font-size: 14px; flex: none; }
-.icon-slot { width: 38px; display: grid; place-items: center; color: var(--muted); flex: none; }
+.icon-slot { width: 40px; display: grid; place-items: center; color: var(--muted); flex: none; }
 .icon-slot svg { width: 20px; height: 20px; }
 
 input[type='range'] {
@@ -304,7 +337,15 @@ input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--a
   min-height: 104px;
   padding: 8px 16px 12px;
 }
-.live-controls { display: flex; justify-content: center; }
+.live-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 440px;
+}
+.live-left { min-width: 0; display: flex; justify-content: flex-start; }
 
 .shutter {
   width: 76px; height: 76px;
@@ -335,6 +376,7 @@ input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--a
 }
 .action:hover { background: var(--surface-hover); }
 .action:active { transform: scale(0.97); }
+.action span { text-align: center; line-height: 1.2; }
 .action.primary { background: var(--accent); color: var(--accent-fg); }
 .action[aria-busy='true'] { opacity: 0.6; }
 
@@ -360,11 +402,73 @@ input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--a
   font-weight: 600; font-size: 14px;
 }
 
+/* ───────────── Install sheet ───────────── */
+
+.sheet {
+  width: min(100% - 24px, 440px);
+  max-height: calc(100dvh - 24px - var(--safe-t));
+  margin: auto auto calc(12px + var(--safe-b));
+  padding: 20px;
+  border: 0;
+  border-radius: 24px;
+  background: #1c1c1e;
+  color: var(--fg);
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+.sheet::backdrop { background: rgba(0, 0, 0, 0.6); }
+.sheet[open] { animation: sheet-in 220ms ease-out; }
+@keyframes sheet-in { from { transform: translateY(24px); opacity: 0; } }
+@media (min-width: 600px) and (min-height: 500px) { .sheet { margin: auto; } }
+
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sheet-head h2 { margin: 0; font-size: 20px; }
+.sheet-note {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 214, 10, 0.12);
+  font-size: 15px;
+}
+.sheet-steps { list-style: none; margin: 16px 0 20px; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.sheet-steps li { display: flex; align-items: flex-start; gap: 12px; font-size: 16px; }
+.step-icon {
+  flex: none;
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--accent);
+}
+.step-icon svg { width: 20px; height: 20px; }
+.sheet-done { width: 100%; }
+
+/* Phones narrower than an iPhone mini: shrink the shutter row so lens names fit. */
+@media (max-width: 374px) {
+  .bottom { padding-left: 10px; padding-right: 10px; }
+  .live-controls { gap: 8px; }
+  .shutter { width: 68px; height: 68px; }
+  .lens select { padding: 0 24px 0 10px; background-position: right 8px center; }
+}
+
+/* Very narrow phones (iPhone SE 1st gen, small Androids). */
+@media (max-width: 359px) {
+  .topbar { gap: 6px; padding: 8px; }
+  .sliders { padding-left: 10px; padding-right: 10px; }
+  .slider-row { gap: 8px; }
+  .slider-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .segmented button { min-width: 50px; padding: 0 10px; }
+  .review-controls { gap: 6px; }
+  .action { font-size: 12px; }
+  .install-btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .install-btn { padding: 0 10px; }
+}
+
 /* Landscape phones: controls move to a column on the right. */
 @media (orientation: landscape) and (max-height: 600px) {
   .viewer {
     grid-template-rows: minmax(0, 1fr);
-    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-columns: minmax(0, 1fr) clamp(256px, 36vw, 320px);
     grid-template-areas: 'stage panel';
   }
   .panel {
@@ -374,9 +478,19 @@ input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--a
     min-height: 0;
     overflow-y: auto;
   }
-  .topbar { flex-wrap: wrap; padding: 8px; }
+  .topbar { gap: 6px; padding: 8px; }
+  .segmented button { min-width: 52px; padding: 0 10px; }
   .sliders { padding: 0 8px; }
+  .slider-row { gap: 8px; }
+  /* Give the sliders the width; the icons identify them and labels stay for screen readers. */
+  .slider-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .bottom { flex: 1; min-height: 96px; padding: 8px; }
+  /* Lens picker gets its own full-width row above the shutter. */
+  .live-controls { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 10px; }
+  .live-left { width: 100%; justify-content: center; }
+  .live-left:has(> [hidden]) { display: none; }
+  .live-right { display: none; }
+  .lens select { max-width: 100%; }
   .review-controls { flex-wrap: wrap; }
   .action { min-height: 56px; flex-basis: 40%; }
 }

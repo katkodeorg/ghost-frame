@@ -4,7 +4,8 @@ import { Overlay, attachGestures } from './overlay';
 import { drawEdges } from './edges';
 import { grabFrame, renderComparison, canvasToBlob, canvasToBlobSync } from './capture';
 import { saveFile, type SaveResult } from './share';
-import { $, timestamp, toast, prefersReducedMotion, sleepFrame } from './util';
+import { $, timestamp, toast, prefersReducedMotion, sleepFrame, isIOS, isAndroid, isStandalone } from './util';
+import { initInstall } from './install';
 
 // ───────────── Elements ─────────────
 const setupEl = $('setup');
@@ -96,9 +97,14 @@ async function loadReference(file: File): Promise<void> {
   const url = URL.createObjectURL(file);
   const img = new Image();
   img.decoding = 'async';
-  img.src = url;
   try {
-    await img.decode();
+    // Wait for load/error rather than img.decode(): decode() can stay pending while
+    // the page is hidden, which happens when a mobile file picker takes over the screen.
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error('decode failed'));
+      img.src = url;
+    });
     if (!img.naturalWidth || !img.naturalHeight) throw new Error('empty image');
   } catch {
     URL.revokeObjectURL(url);
@@ -227,16 +233,12 @@ function showMessage(title: string, body: Node[], retryLabel: string | null = 'T
   (retryLabel ? camRetry : $('cam-back')).focus();
 }
 
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const isAndroid = /Android/i.test(navigator.userAgent);
-const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
-
 function showCameraError(err: unknown): void {
   const kind = err instanceof CameraError ? err.kind : 'unknown';
   switch (kind) {
     case 'denied': {
       const steps = isIOS
-        ? isStandalone
+        ? isStandalone()
           ? ['Open the Settings app → Apps → Safari → Camera.', 'Choose “Ask” or “Allow”.', 'Return here and tap Try again.']
           : ['Tap “aA” (or the page menu) in Safari’s address bar → Website Settings.', 'Set Camera to “Allow”.', 'If it’s missing: Settings app → Apps → Safari → Camera → Ask.', 'Tap Try again.']
         : isAndroid
@@ -565,6 +567,8 @@ document.addEventListener('keyup', (e) => {
 });
 
 // ───────────── PWA ─────────────
+initInstall();
+
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(() => {

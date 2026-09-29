@@ -36,3 +36,15 @@ export function toast(message: string, action?: { label: string; run: () => void
 export function sleepFrame(): Promise<void> {
   return new Promise((r) => requestAnimationFrame(() => r()));
 }
+
+export const isIOS =
+  /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+export const isAndroid = /Android/i.test(navigator.userAgent);
+
+/** Running as an installed home-screen app. */
+export function isStandalone(): boolean {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (navigator as Navigator & { standalone?: boolean }).standalone === true
+  );
+}

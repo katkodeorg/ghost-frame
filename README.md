@@ -14,6 +14,7 @@ Recreate any photo. Pick a reference image (an anime scene, an influencer's shot
 | **Alignment** | Drag to move, pinch to resize around your fingers, double‑tap to reset, mouse wheel / trackpad pinch to zoom. Keyboard: arrows move, `+`/`-` resize, `0` resets |
 | **Camera** | Rear camera at the highest resolution the browser offers (ideal 4032×3024), letterboxed so what you see is exactly what's captured. Lens picker (Ultra Wide / Wide / Telephoto on iPhone) and zoom slider where supported |
 | **Capture** | Shutter button or **Space**. The saved photo never includes the overlay |
+| **Install** | An **Install** button on the start screen. Chrome/Edge (Android and desktop) shows the native install prompt. On iPhone/iPad, where no install API exists, it opens step‑by‑step *Add to Home Screen* instructions, and warns when you're in an Instagram/TikTok in‑app browser that must open Safari first. Hidden once installed |
 | **Review** | Keep adjusting the overlay, then **Save photo** or **Save comparison** (reference with your exact alignment next to your shot). On phones, saving opens the share sheet, so on iPhone choose **Save Image** to put it in Photos |
 
 ## Local development
@@ -90,6 +91,7 @@ src/overlay.ts          Normalised overlay transform + gestures
 src/edges.ts            Grayscale → blur → Sobel → 90th‑percentile edges
 src/capture.ts          Frame grab, comparison rendering, JPEG encode
 src/share.ts            Web Share with download fallback
+src/install.ts          Install button (beforeinstallprompt / iOS instructions)
 src/style.css           Styles (safe areas, landscape layout, reduced motion)
 scripts/sw-template.js  Service worker; the precache list is injected at build
 scripts/make-icons.mjs  Dependency‑free PNG icon generator
