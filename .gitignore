@@ -1,0 +1,4 @@
+node_modules
+.DS_Store
+*.log
+# NOTE: docs/ is the GitHub Pages build output and IS committed.
